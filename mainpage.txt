@@ -2,4 +2,6 @@
 \image html knntest.png
 \section download Download
 \htmlinclude download.html
+\section usage Usage
+\htmlinclude usage.html
 */

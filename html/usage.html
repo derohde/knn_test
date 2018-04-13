@@ -1,5 +1,3 @@
-<h2>Import, Build and Test K-Nearest Neighbor Graph</h2>
-
 <pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>import</span> numpy <span style='color:#800000; font-weight:bold; '>as</span> np
 <span style='color:#800000; font-weight:bold; '>import</span> KNNTest <span style='color:#800000; font-weight:bold; '>as</span> kt
 <span style='color:#800000; font-weight:bold; '>import</span> sklearn<span style='color:#808030; '>.</span>neighbors <span style='color:#800000; font-weight:bold; '>as</span> sk                     <span style='color:#696969; '># Import Scikit-Learn (Example)</span>
@@ -17,6 +15,9 @@ V <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span
                                                    <span style='color:#696969; '># utilizing mersenne-twister algorithm</span>
 
 Vn <span style='color:#808030; '>=</span> u<span style='color:#808030; '>.</span>numpy_array<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span>                               <span style='color:#696969; '># get as numpy nd-array</span>
+
+Vn1 <span style='color:#808030; '>=</span> np<span style='color:#808030; '>.</span>random<span style='color:#808030; '>.</span>rand<span style='color:#808030; '>(</span>n<span style='color:#808030; '>,</span> d<span style='color:#808030; '>)</span>                         <span style='color:#696969; '># random data from numpy</span>
+V1 <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span>Relation<span style='color:#808030; '>(</span>Vn1<span style='color:#808030; '>)</span>                              <span style='color:#696969; '># make KNNTest relation, so a KNN_Graph can be build from the data</span>
 
 <span style='color:#696969; '>#</span>
 <span style='color:#696969; '># Build adjacency-matrix of exact 10-NN Graph efficiently with scikit</span>

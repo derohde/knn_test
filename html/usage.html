@@ -1,0 +1,72 @@
+<h2>Import, Build and Test K-Nearest Neighbor Graph</h2>
+
+<pre style='color:#000000;background:#ffffff;'><span style='color:#800000; font-weight:bold; '>import</span> numpy <span style='color:#800000; font-weight:bold; '>as</span> np
+<span style='color:#800000; font-weight:bold; '>import</span> KNNTest <span style='color:#800000; font-weight:bold; '>as</span> kt
+<span style='color:#800000; font-weight:bold; '>import</span> sklearn<span style='color:#808030; '>.</span>neighbors <span style='color:#800000; font-weight:bold; '>as</span> sk                     <span style='color:#696969; '># Import Scikit-Learn (Example)</span>
+<span style='color:#800000; font-weight:bold; '>import</span> pykgraph <span style='color:#800000; font-weight:bold; '>as</span> kg
+
+n <span style='color:#808030; '>=</span> <span style='color:#008c00; '>100</span>                                            <span style='color:#696969; '># 100 points</span>
+k <span style='color:#808030; '>=</span> <span style='color:#008c00; '>10</span>                                             <span style='color:#696969; '># 10-NN</span>
+epsilon <span style='color:#808030; '>=</span> <span style='color:#008000; '>0.5</span>                                      <span style='color:#696969; '># at least half of all queries should return exact k-nearest neighbors</span>
+d <span style='color:#808030; '>=</span> <span style='color:#008c00; '>4</span>                                              <span style='color:#696969; '># 4 dimensions</span>
+delta <span style='color:#808030; '>=</span> k                                          <span style='color:#696969; '># average degree of graph should be k for most NN-libs</span>
+c1 <span style='color:#808030; '>=</span> <span style='color:#008c00; '>2</span>                                             <span style='color:#696969; '># tuning parameter 1</span>
+c2 <span style='color:#808030; '>=</span> <span style='color:#008c00; '>1</span>                                             <span style='color:#696969; '># tuning parameter 2</span>
+
+V <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span>Uniform_Random_Tuple_Generator<span style='color:#808030; '>(</span>n<span style='color:#808030; '>,</span> d<span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>get<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span>  <span style='color:#696969; '># Generate n tuples of dimension d uniformly at random</span>
+                                                   <span style='color:#696969; '># utilizing mersenne-twister algorithm</span>
+
+Vn <span style='color:#808030; '>=</span> u<span style='color:#808030; '>.</span>numpy_array<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span>                               <span style='color:#696969; '># get as numpy nd-array</span>
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Build adjacency-matrix of exact 10-NN Graph efficiently with scikit</span>
+<span style='color:#696969; '>#</span>
+sk_E <span style='color:#808030; '>=</span> np<span style='color:#808030; '>.</span>matrix<span style='color:#808030; '>(</span>sk<span style='color:#808030; '>.</span>NearestNeighbors<span style='color:#808030; '>(</span>metric<span style='color:#808030; '>=</span><span style='color:#0000e6; '>'euclidean'</span><span style='color:#808030; '>,</span> algorithm<span style='color:#808030; '>=</span><span style='color:#0000e6; '>'ball_tree'</span><span style='color:#808030; '>,</span> n_neighbors<span style='color:#808030; '>=</span>k<span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>fit<span style='color:#808030; '>(</span>Vn<span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>kneighbors_graph<span style='color:#808030; '>(</span>Vn<span style='color:#808030; '>,</span> mode<span style='color:#808030; '>=</span><span style='color:#0000e6; '>'connectivity'</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>toarray<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>.</span>astype<span style='color:#808030; '>(</span><span style='color:#0000e6; '>'bool'</span><span style='color:#808030; '>)</span><span style='color:#808030; '>)</span>
+knng_sk <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span>KNN_Graph<span style='color:#808030; '>(</span>k<span style='color:#808030; '>)</span>
+knng_sk<span style='color:#808030; '>.</span>build<span style='color:#808030; '>(</span>V<span style='color:#808030; '>)</span>
+knng_sk<span style='color:#808030; '>.</span>set_edges<span style='color:#808030; '>(</span>sk_E<span style='color:#808030; '>)</span>
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Build exact 10-NN Graph with brute-force algorithm in O(n^2)</span>
+<span style='color:#696969; '>#</span>
+knng_kt <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span>KNN_Graph_Exact<span style='color:#808030; '>(</span>k<span style='color:#808030; '>)</span>
+knng_kt<span style='color:#808030; '>.</span>build<span style='color:#808030; '>(</span>V<span style='color:#808030; '>)</span>                       
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Build KNN-Index with KGraph</span>
+<span style='color:#696969; '>#</span>
+kg_index <span style='color:#808030; '>=</span> pk<span style='color:#808030; '>.</span>KGraph<span style='color:#808030; '>(</span>Vn<span style='color:#808030; '>,</span> <span style='color:#0000e6; '>'euclidean'</span><span style='color:#808030; '>)</span>
+kg_index<span style='color:#808030; '>.</span>build<span style='color:#808030; '>(</span>reverse<span style='color:#808030; '>=</span><span style='color:#44aadd; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span>
+knng_kg <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span>KNN_Graph<span style='color:#808030; '>(</span>k<span style='color:#808030; '>)</span>
+knng_kg<span style='color:#808030; '>.</span>build<span style='color:#808030; '>(</span>V<span style='color:#808030; '>)</span>                                   <span style='color:#696969; '># dummy build</span>
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Wrap KGraph-Index in sampling-function</span>
+<span style='color:#696969; '>#</span>
+<span style='color:#800000; font-weight:bold; '>def</span> query_kg<span style='color:#808030; '>(</span>Vn<span style='color:#808030; '>,</span> kg_index<span style='color:#808030; '>,</span> k<span style='color:#808030; '>,</span> i<span style='color:#808030; '>)</span><span style='color:#808030; '>:</span>
+    neighbors <span style='color:#808030; '>=</span> kg_index<span style='color:#808030; '>.</span>search<span style='color:#808030; '>(</span>Vn<span style='color:#808030; '>[</span>i<span style='color:#808030; '>]</span><span style='color:#808030; '>.</span>reshape<span style='color:#808030; '>(</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span> Vn<span style='color:#808030; '>[</span>i<span style='color:#808030; '>]</span><span style='color:#808030; '>.</span>shape<span style='color:#808030; '>[</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#808030; '>,</span> K<span style='color:#808030; '>=</span>k<span style='color:#808030; '>)</span>
+    <span style='color:#800000; font-weight:bold; '>return</span> Vn<span style='color:#808030; '>[</span>neighbors<span style='color:#808030; '>,</span><span style='color:#808030; '>:</span><span style='color:#808030; '>]</span><span style='color:#808030; '>[</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>]</span>
+    
+q_kg <span style='color:#808030; '>=</span> <span style='color:#800000; font-weight:bold; '>lambda</span> i<span style='color:#808030; '>:</span> query_kg<span style='color:#808030; '>(</span>Vn<span style='color:#808030; '>,</span> kg_index<span style='color:#808030; '>,</span> k<span style='color:#808030; '>,</span> i<span style='color:#808030; '>)</span>
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Property Tester for Graphs</span>
+<span style='color:#696969; '>#</span>
+pt_g <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span>KNN_Tester<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span>
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Property Tester for Query-Oracle</span>
+<span style='color:#696969; '>#</span>
+pt_o <span style='color:#808030; '>=</span> kt<span style='color:#808030; '>.</span>KNN_Tester_Oracle<span style='color:#808030; '>(</span>kg<span style='color:#808030; '>.</span>Query_Oracle<span style='color:#808030; '>(</span>q_kg<span style='color:#808030; '>)</span><span style='color:#808030; '>)</span>
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Test Graphs</span>
+<span style='color:#696969; '>#</span>
+kt_graph_is_far <span style='color:#808030; '>=</span> pt_g<span style='color:#808030; '>.</span>test<span style='color:#808030; '>(</span>knng_kt<span style='color:#808030; '>,</span> delta<span style='color:#808030; '>,</span> d<span style='color:#808030; '>,</span> epsilon<span style='color:#808030; '>,</span> c1<span style='color:#808030; '>,</span> c2<span style='color:#808030; '>)</span>
+sk_graph_is_far <span style='color:#808030; '>=</span> pt_g<span style='color:#808030; '>.</span>test<span style='color:#808030; '>(</span>knng_sk<span style='color:#808030; '>,</span> delta<span style='color:#808030; '>,</span> d<span style='color:#808030; '>,</span> epsilon<span style='color:#808030; '>,</span> c1<span style='color:#808030; '>,</span> c2<span style='color:#808030; '>)</span>
+
+<span style='color:#696969; '>#</span>
+<span style='color:#696969; '># Test Oracle</span>
+<span style='color:#696969; '>#</span>
+kg_oracle_is_far <span style='color:#808030; '>=</span> pt_o<span style='color:#808030; '>.</span>test<span style='color:#808030; '>(</span>knng_kg<span style='color:#808030; '>,</span> delta<span style='color:#808030; '>,</span> d<span style='color:#808030; '>,</span> epsilon<span style='color:#808030; '>,</span> c1<span style='color:#808030; '>,</span> c2<span style='color:#808030; '>)</span>
+</pre>

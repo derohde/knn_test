@@ -45,7 +45,8 @@ BOOST_PYTHON_MODULE(KNNTest)
     ;
     
     class_<KNN_Graph<double>>("KNN_Graph", init<optional<unsigned int>>())
-        .def("build", &KNN_Graph<double>::build)
+        .def("build", static_cast<void (KNN_Graph<double>::*)(const KNN_Graph<double>::vertices_type&)>(&KNN_Graph<double>::build))
+        .def("build", static_cast<void (KNN_Graph<double>::*)(const np::ndarray&)>(&KNN_Graph<double>::build))
         .def("get_k", &KNN_Graph<double>::get_k)
         .def("number_vertices", &KNN_Graph<double>::number_vertices)
         .def("number_edges", &KNN_Graph<double>::number_edges)
@@ -58,7 +59,8 @@ BOOST_PYTHON_MODULE(KNNTest)
     ;
     
     class_<KNN_Graph_Exact<double>, bases<KNN_Graph<double>>>("KNN_Graph_Exact", init<optional<unsigned int>>())
-        .def("build", &KNN_Graph_Exact<double>::build)
+        .def("build", static_cast<void (KNN_Graph_Exact<double>::*)(const KNN_Graph_Exact<double>::vertices_type&)>(&KNN_Graph_Exact<double>::build))
+        .def("build", static_cast<void (KNN_Graph_Exact<double>::*)(const np::ndarray&)>(&KNN_Graph_Exact<double>::build))
     ;
 
     class_<Uniform_Random_Tuple_Generator<double>>("Uniform_Random_Tuple_Generator", init<std::uint64_t, optional<unsigned int>>())

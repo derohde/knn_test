@@ -43,9 +43,14 @@ public:
     typedef Adjacency_List adjacency_list_type;
     typedef std::vector<adjacency_list_type> edges_type;
     
-    inline static double euclidean_distance(const location_type &a, const location_type &b) {
+    inline static T euclidean_distance(const location_type &a, const location_type &b) {
         auto diff = a - b;
         return sqrt(diff * diff);
+    }
+    
+    inline static T euclidean_distance_squared(const location_type &a, const location_type &b) {
+        auto diff = a - b;
+        return diff * diff;
     }
     
     KNN_Graph() : k{0}, vertices{}, edges{} {}
@@ -152,7 +157,7 @@ public:
             auto &adj_list = edges[i];
                         
             for (index_type j = 0; j < adj_list.size(); ++j) {
-                auto dist = euclidean_distance(vertices[i], vertices[adj_list[j]]);
+                auto dist = euclidean_distance_squared(vertices[i], vertices[adj_list[j]]);
                 if (std::fabs(dist - distN) > std::numeric_limits<T>::epsilon() and dist > distN) {
                     distN = dist;
                 }
@@ -161,7 +166,7 @@ public:
             for (index_type j = 0; j < number_vertices(); ++j) {
                 if (wrongly_connected) continue;
                 else if (std::find(adj_list.begin(), adj_list.end(), j) == adj_list.end() and i != j) {
-                    auto dist = euclidean_distance(vertices[i], vertices[j]);
+                    auto dist = euclidean_distance_squared(vertices[i], vertices[j]);
                     if (std::fabs(dist - distN) > std::numeric_limits<T>::epsilon() and dist < distN) {
                         #pragma omp critical
                         {
@@ -196,6 +201,10 @@ public:
     virtual void build(const vertices_type &vertices) {
         this->vertices = vertices;
         this->edges = edges_type(vertices.size());
+    }
+    
+    virtual void build(const np::ndarray &in) {
+        this->vertices = vertices_type{in};
     }
     
     void edges_from_ndarray(const np::ndarray &in) {
@@ -256,6 +265,10 @@ public:
         this->edges = typename super::edges_type{};
     }
     
+    void build(const np::ndarray &in) {
+        this->build(typename super::vertices_type(in));
+    }
+    
     void build(const typename super::vertices_type &vertices) {
         this->vertices = vertices;
         this->edges = typename super::edges_type(vertices.size());
@@ -270,7 +283,7 @@ public:
                 
                 if (i != j) {
                 
-                    auto dist = this->euclidean_distance(this->vertices[i], this->vertices[j]);
+                    auto dist = this->euclidean_distance_squared(this->vertices[i], this->vertices[j]);
                                         
                     if (this->edges[i].length() >= this->k) {
                         if (dist < distance_furthest) {
@@ -282,7 +295,7 @@ public:
                                 neighbor = this->edges[i][l];
                                 furthest_neighbor = this->edges[i][furthest];
                                 
-                                if (this->euclidean_distance(this->vertices[i], this->vertices[furthest_neighbor]) < this->euclidean_distance(this->vertices[i], this->vertices[neighbor])) {
+                                if (this->euclidean_distance_squared(this->vertices[i], this->vertices[furthest_neighbor]) < this->euclidean_distance_squared(this->vertices[i], this->vertices[neighbor])) {
                                     furthest = l;
                                 }
                             }
@@ -293,11 +306,11 @@ public:
                                 neighbor = this->edges[i][l];
                                 furthest_neighbor = this->edges[i][furthest];
                                 
-                                if (this->euclidean_distance(this->vertices[i], this->vertices[furthest_neighbor]) < this->euclidean_distance(this->vertices[i], this->vertices[neighbor])) {
+                                if (this->euclidean_distance_squared(this->vertices[i], this->vertices[furthest_neighbor]) < this->euclidean_distance_squared(this->vertices[i], this->vertices[neighbor])) {
                                     furthest = l;
                                 }
                             }
-                            distance_furthest = this->euclidean_distance(this->vertices[i], this->vertices[this->edges[i][furthest]]);
+                            distance_furthest = this->euclidean_distance_squared(this->vertices[i], this->vertices[this->edges[i][furthest]]);
                         }
                     } else {
                         if (this->edges[i].length() == 0) {

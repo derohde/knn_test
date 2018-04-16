@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 template <typename T = double>
 class Uniform_Random_Generator {
-    std::mt19937 mersenne_twister;
+    std::mt19937_64 mersenne_twister;
     std::uniform_real_distribution<T> distribution;
     T lbound, ubound;
     

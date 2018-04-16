@@ -20,7 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 namespace np = boost::python::numpy;
 namespace p = boost::python;
 
-template<typename T = double>
+template <typename T = double>
 class Tuple : public std::vector<T> {   
     typedef unsigned long index_type;
      

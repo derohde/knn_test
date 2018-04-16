@@ -210,7 +210,7 @@ public:
     void edges_from_ndarray(const np::ndarray &in) {
         auto dimensions = in.get_nd();
         if (dimensions != 2 or in.get_dtype() != np::dtype::get_builtin<bool>()) {
-            std::cerr << "Need 1-dimensional numpy array of type bool!" << std::endl;
+            std::cerr << "Need 2-dimensional numpy array of type bool!" << std::endl;
             return;
         }
         this->edges = edges_type(vertices.size());

@@ -30,7 +30,7 @@ public:
             index_type v = 0;
             auto result = p::call<np::ndarray>(callable, v);
             if (result.get_nd() != 2) {
-                throw std::invalid_argument("Function must return 2-dim. ndarray!");
+                throw std::invalid_argument("Function must return 2-dim. ndarray of correct type!");
             }
             if (result.get_dtype() != np::dtype::get_builtin<T>()) {
                 throw std::invalid_argument("Function must return 2-dim. ndarray of correct type!");

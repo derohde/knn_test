@@ -71,7 +71,7 @@ BOOST_PYTHON_MODULE(KNNTest)
     
     class_<KNN_Tester<double>>("KNN_Tester")
         .def("test", &KNN_Tester<double>::test)
-        .def("calculate_lower_bound_c1", &KNN_Tester<double>::calculate_c1_lower_bound)
+        .def("c1_approximate", &KNN_Tester<double>::c1_approximate)
     ;
     
     class_<KNN_Tester_Oracle<double>, bases<KNN_Tester<double>>>("KNN_Tester_Oracle", init<Query_Oracle<double>>())

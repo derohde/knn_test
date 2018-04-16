@@ -10,7 +10,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #pragma once
 
-#define __STDCPP_WANT_MATH_SPEC_FUNCS__ 1
 #include <cmath>
 #include <limits>
 
@@ -25,18 +24,17 @@ class KNN_Tester {
 public:
     KNN_Tester() {}
     
-    double calculate_c1_lower_bound(const double delta) const {
-        #if __GNUC__ >= 7
-        const long double pi = std::acos(-1);
-        const long double kissing_number_lattice_lb_density = std::riemann_zeta(delta) / std::pow(2, delta-1);
-        const long double sphere_volume = 2 * std::pow(pi, delta / 2) / std::tgamma(delta / 2) / delta;
-        const long double hermite = 4 * std::pow(kissing_number_lattice_lb_density / sphere_volume, 2 / delta);
-        const long double kissing_number_lattice_lb = std::pow(hermite, delta);
-        return std::log(kissing_number_lattice_lb) / std::log(2) / delta / 0.401 - 1;
-        #else
-        std::cerr << "This function was not implemented, because gcc version was < 7!" << std::endl;
-        return 1;
-        #endif
+    /**
+     * 
+     * Calculates asymptotical upper bound for lattice sphere packing from Skoruppa07
+     * @param Number of dimensions delta
+     * @return estimate for c1
+     * 
+     */
+    static double c1_approximate(const double delta) {
+        auto epsilon = std::pow(10, -100);
+        auto kissing_number_lattice_asymp_ub = std::exp(delta * (1 + epsilon)*(1 - std::log(2)) + delta/1.95);
+        return std::log(kissing_number_lattice_asymp_ub) / std::log(2) / delta / 0.401 - 1;
     }
     
     /**

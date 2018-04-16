@@ -30,7 +30,7 @@ Relation<T> read_csv(std::string filename, const unsigned long d) {
     unsigned long i = 1;
 
     while (std::getline(in, line)) {
-        if (line[0] == '#') continue;
+        if (line[0] == '#' or line[0] == ' ' or line[0] == '/') continue;
         vec.clear();
         boost::tokenizer<boost::escaped_list_separator<char>> tok(line);
         for (const auto &token: tok) {

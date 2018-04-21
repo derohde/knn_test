@@ -139,6 +139,10 @@ public:
         return epsilon;
     }
     
+    inline auto dimensions() const {
+        return number_vertices() == 0 ? 0 : vertices[0].dimensions();
+    }
+    
     inline auto number_vertices() const {
         return vertices.size();
     }
@@ -245,6 +249,28 @@ public:
         return vertices;
     }
     
+    inline auto edges_begin() const {
+        return edges.begin();
+    }
+    
+    inline auto edges_end() const {
+        return edges.end();
+    }
+    
+    inline auto vertices_begin() const {
+        return vertices.begin();
+    }
+    
+    inline auto vertices_end() const {
+        return vertices.end();
+    }
+    
+    inline auto as_str() const {
+        std::stringstream ss;
+        ss << *this;
+        return ss.str();
+    }
+    
 protected:
     unsigned long k;
     unsigned long long edges_number = 0;
@@ -328,3 +354,24 @@ public:
         std::cout << "Exact " << this->k << "-NNGraph built." << std::endl;
     }
 };
+
+template <typename T = double>
+std::ostream& operator<<(std::ostream &out, const typename KNN_Graph<T>::Adjacency_List &a) {
+    const auto size = a.size();
+    for (auto i = size-size; i < size-1; ++i) {
+        out << a.get(i);
+        out << ", ";
+    }
+    out << a.get(size-1) << std::endl;
+    return out;
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream &out, const KNN_Graph<T> &g) {
+    const auto size = g.number_vertices();
+    for (auto i = size-size; i < size; ++i) {
+        out << i << ": ";
+        out << g.get_neighbors(i);
+    }
+    return out;
+}

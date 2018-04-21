@@ -22,6 +22,11 @@ class KNN_Tester {
     typedef typename KNN_Graph<V>::vertices_type vertices_type;
     
 public:
+    /**
+     * tuning parameter c1 for psi, tuning parameter c2 for |T|
+     */
+    double c1 = 1.86, c2 = 1;
+
     KNN_Tester() {}
     
     /**
@@ -40,11 +45,12 @@ public:
     /**
      * 
      * Property Testing Algorithm for k-nearest Neighborhood Graphs
-     * @param KNN_Graph G, average degree of G, dimension of G's vertices, epsilon, tuning parameter c1 for psi, tuning parameter c2 for |T|
+     * @param KNN_Graph G, average degree of G, epsilon
      * @return true or false
      * 
      */
-    virtual bool test(const KNN_Graph<V> &graph, const double d, const unsigned long delta = 3, const double epsilon = 0.001, const double c1 = 1.86, const double c2 = 1.0) const {
+    virtual bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) const {
+        const auto delta = graph.dimensions();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
         const auto psi = pow(2, 0.401 * delta * (1 + c1));
@@ -124,15 +130,16 @@ public:
     /**
      * 
      * Property Testing Algorithm for k-Nearest Neighborhood Graphs - Oracle Version
-     * @param KNN_Graph G, average degree of G, dimension of G's vertices, epsilon, tuning parameter c1 for psi, tuning parameter c2 for |T|
+     * @param KNN_Graph G, average degree of G, epsilon
      * @return
      * 
      */
-    bool test(const KNN_Graph<V> &graph, const double d, const unsigned long delta = 3, const double epsilon = 0.001, const double c1 = 1.86, const double c2 = 1) const {
-    const auto k = graph.get_k();
+    bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) const {
+        const auto delta = graph.dimensions();
+        const auto k = graph.get_k();
         const auto n = graph.number_vertices();
-        const auto psi = pow(2, 0.401 * delta * (1 + c1));
-        const auto s = ceil(100 * k * sqrt(n) / epsilon * c2);
+        const auto psi = pow(2, 0.401 * delta * (1 + this->c1));
+        const auto s = ceil(100 * k * sqrt(n) / epsilon * this->c2);
         const auto t = ceil(log(10) * psi * k * sqrt(n));
         
         Uniform_Random_Generator<double> urandom_gen;
@@ -205,12 +212,20 @@ public:
 template <typename V = double>
 class KNN_Improver : public KNN_Tester<V> {
 public:
-    auto improve(KNN_Graph<V> &graph, const double d, const unsigned long delta = 3, const double epsilon = 0.001, const double c1 = 1.86, const double c2 = 1.0) const {
+    /**
+     * 
+     * Property Testing Algorithm for k-Nearest Neighborhood Graphs - Graph Restauration
+     * @param KNN_Graph G, average degree of G, epsilon
+     * @return
+     * 
+     */
+    auto improve(KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) const {
         auto result = 0ul; 
+        const auto delta = graph.dimensions();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
-        const auto psi = pow(2, 0.401 * delta * (1 + c1));
-        const auto s = ceil(100 * k * sqrt(n) / epsilon * c2);
+        const auto psi = pow(2, 0.401 * delta * (1 + this->c1));
+        const auto s = ceil(100 * k * sqrt(n) / epsilon * this->c2);
         const auto t = ceil(log(10) * psi * k * sqrt(n));
         
         Uniform_Random_Generator<double> urandom_gen;

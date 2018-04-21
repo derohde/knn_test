@@ -48,6 +48,10 @@ public:
         }
     }
     
+    inline auto dimensions() const {
+        return this->size() == 0 ? 0 : this->operator[](0).dimensions();
+    }
+    
     inline auto as_ndarray() const {
         p::list l;
         np::dtype dt = np::dtype::get_builtin<T>();
@@ -56,7 +60,7 @@ public:
         if (size == 0) {
             return result;
         }
-        unsigned long d = this->get(0).length();
+        unsigned long d = this->get(0).size();
         for (index_type i = 0; i < size; ++i) {
             p::list lu;
             for (unsigned long j = 0; j < d; ++j) {
@@ -74,4 +78,22 @@ public:
         }
         return this->operator[](i);
     }
+    
+    inline auto as_str() const {
+        std::stringstream ss;
+        ss << *this;
+        return ss.str();
+    }
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream &out, const Relation<T> &r) {
+    const auto size = r.size();
+    out << "{";
+    for (auto i = size-size; i < size-1; ++i) {
+        out << r.get(i);
+        out << std::endl;
+    }
+    out << r.get(size-1) << "}";
+    return out;
+}

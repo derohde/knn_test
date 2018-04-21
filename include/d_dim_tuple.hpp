@@ -33,7 +33,7 @@ public:
     Tuple(const T &in, const index_type d) : tuple_type(d, in) {}
     Tuple(const tuple_type &in, const index_type d) : tuple_type{} {
         if (in.size() < d) {
-            throw std::invalid_argument("Could not build d-tuple from vector of length "+std::to_string(in.size()));
+            throw std::invalid_argument("Could not build d-tuple from vector of dimension "+std::to_string(in.size()));
         }
         this->assign(in.begin(), in.begin() + d);
     }
@@ -59,37 +59,37 @@ public:
         return this->operator[](i);
     }
     
-    inline auto length() const {
+    inline auto dimensions() const {
         return this->size();
     }
     
     inline auto operator-(const Tuple<T> &o) const {
-        Tuple<T> result{*this, this->length()};
-        if (this->length() != o.length()) {
-            result = Tuple<T>(std::numeric_limits<T>::signaling_NaN(), this->length());
+        Tuple<T> result{*this, this->size()};
+        if (this->size() != o.size()) {
+            result = Tuple<T>(std::numeric_limits<T>::signaling_NaN(), this->size());
             return result;
         }
-        for (index_type i = 0; i < this->length(); ++i) {
+        for (index_type i = 0; i < this->size(); ++i) {
             result[i] -= o.get(i);
         }
         return result;
     }
     
     inline auto operator*(const Tuple<T> &o) const {
-        if (this->length() != o.length()) return std::numeric_limits<T>::signaling_NaN();
+        if (this->size() != o.size()) return std::numeric_limits<T>::signaling_NaN();
         T sum = 0;
-        for (index_type i = 0; i < this->length(); ++i) {
+        for (index_type i = 0; i < this->size(); ++i) {
             sum += get(i) * o.get(i);
         }
         return sum;
     }
     
     inline auto operator==(const Tuple<T> &o) const {
-        if (this->length() != o.length()) {
+        if (this->size() != o.size()) {
             std::cerr << "Can not compare tuples of different dimension!" << std::endl;
             return false;
         }
-        for (index_type i = 0; i < this->length(); ++i) {
+        for (index_type i = 0; i < this->size(); ++i) {
             if (std::fabs(get(i) - o.get(i)) < std::numeric_limits<T>::epsilon()) continue;
             else return false;
         }
@@ -97,11 +97,11 @@ public:
     }
     
     inline bool operator<(const Tuple<T> &o) const {
-        if (this->length() != o.length()) {
+        if (this->size() != o.size()) {
             std::cerr << "Can not compare tuples of different dimension!" << std::endl;
             return false;
         }
-        for (index_type i = 0; i < this->length(); ++i) {
+        for (index_type i = 0; i < this->size(); ++i) {
             if (not (std::fabs(get(i) - o.get(i)) < std::numeric_limits<T>::epsilon())) {
                 if (o.get(i) - get(i) >= std::numeric_limits<T>::epsilon()) {
                     return true;
@@ -134,7 +134,7 @@ public:
 
 template <typename T>
 std::ostream& operator<<(std::ostream &out, const Tuple<T> &t) {
-    const auto d = t.length();
+    const auto d = t.size();
     out << "(";
     for (auto i = d-d; i < d-1; ++i) {
         out << t.get(i);

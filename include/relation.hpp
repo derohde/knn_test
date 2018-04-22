@@ -48,8 +48,8 @@ public:
         }
     }
     
-    inline auto dimensions() const {
-        return this->size() == 0 ? 0 : this->operator[](0).dimensions();
+    inline auto dimension() const {
+        return this->size() == 0 ? 0 : this->operator[](0).dimension();
     }
     
     inline auto as_ndarray() const {
@@ -83,6 +83,21 @@ public:
         std::stringstream ss;
         ss << *this;
         return ss.str();
+    }
+    
+    inline auto repr() const {
+        std::stringstream ss;
+        ss << "Relation of Dimension " << dimension() << ":" << std::endl;
+        ss << as_str();
+        return ss.str();
+    }
+    
+    inline auto pbegin() const {
+        return this->begin();
+    }
+    
+    inline auto pend() const {
+        return this->end();
     }
 };
 

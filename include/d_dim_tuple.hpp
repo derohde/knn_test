@@ -59,7 +59,7 @@ public:
         return this->operator[](i);
     }
     
-    inline auto dimensions() const {
+    inline auto dimension() const {
         return this->size();
     }
     
@@ -119,6 +119,13 @@ public:
         return ss.str();
     }
     
+    inline auto repr() const {
+        std::stringstream ss;
+        ss << "Tuple of Dimension " << dimension() << ":" << std::endl;
+        ss << as_str();
+        return ss.str();
+    }
+    
     inline auto as_ndarray() const {
         np::dtype dt = np::dtype::get_builtin<T>();
         p::list l;
@@ -130,6 +137,13 @@ public:
         return result;
     }
     
+    inline auto pbegin() const {
+        return this->begin();
+    }
+    
+    inline auto pend() const {
+        return this->end();
+    }
 };
 
 template <typename T>

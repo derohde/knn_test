@@ -21,25 +21,36 @@ template <typename V = double>
 class KNN_Tester {
     typedef typename KNN_Graph<V>::vertices_type vertices_type;
     
+protected:
+    bool auto_c1;
+    
 public:
     /**
-     * tuning parameter c1 for psi, tuning parameter c2 for |T|
+     * 
+     * tuning parameter c1 for psi
+     * 
      */
-    double c1 = 1.86, c2 = 1;
-
-    KNN_Tester() {}
+    double c1 = 1.86;
     
     /**
      * 
-     * Calculates asymptotical upper bound for lattice sphere packing from Skoruppa07
-     * @param Number of dimensions delta
-     * @return estimate for c1
+     * tuning parameter c2 for |T|
      * 
      */
-    static double c1_approximate(const double delta) {
-        auto epsilon = std::pow(10, -100);
-        auto kissing_number_lattice_asymp_ub = std::exp(delta * (1 + epsilon)*(1 - std::log(2)) + delta/1.95);
-        return std::log(kissing_number_lattice_asymp_ub) / std::log(2) / delta / 0.401 - 1;
+    double c2 = 1;
+
+    KNN_Tester(const bool auto_c1 = true) : auto_c1{auto_c1} {}
+    
+    /**
+     * 
+     * Calculates approximate for c1
+     * @param Number of dimensions delta
+     * @return approximate for c1
+     * 
+     */
+    static double c1_approximate(const KNN_Graph<V> &graph) {
+        auto delta = graph.dimension();
+        return 2.85 * delta / std::pow(delta, 1.4); 
     }
     
     /**
@@ -49,8 +60,9 @@ public:
      * @return true or false
      * 
      */
-    virtual bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) const {
-        const auto delta = graph.dimensions();
+    virtual bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
+        if (auto_c1) this->c1 = c1_approximate(graph);
+        const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
         const auto psi = pow(2, 0.401 * delta * (1 + c1));
@@ -118,6 +130,14 @@ public:
             return true;
         }
     }
+    
+    inline auto get_auto_c1() const {
+        return auto_c1;
+    }
+    
+    inline void set_auto_c1(const bool auto_c1) {
+        this->auto_c1 = auto_c1;
+    }
 };
 
 template <typename V = double>
@@ -134,8 +154,9 @@ public:
      * @return
      * 
      */
-    bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) const {
-        const auto delta = graph.dimensions();
+    bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
+        if (this->auto_c1) this->c1 = this->c1_approximate(graph);
+        const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
         const auto psi = pow(2, 0.401 * delta * (1 + this->c1));
@@ -219,9 +240,10 @@ public:
      * @return
      * 
      */
-    auto improve(KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) const {
+    auto improve(KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
         auto result = 0ul; 
-        const auto delta = graph.dimensions();
+        if (this->auto_c1) this->c1 = this->c1_approximate(graph);
+        const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
         const auto psi = pow(2, 0.401 * delta * (1 + this->c1));

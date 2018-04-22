@@ -36,6 +36,14 @@ public:
         inline auto length() const {
             return this->size();
         }
+        
+        inline auto pbegin() const {
+            return this->begin();
+        }
+        
+        inline auto pend() const {
+            return this->end();
+        }
     };
     
     typedef Tuple<T> location_type;
@@ -139,8 +147,8 @@ public:
         return epsilon;
     }
     
-    inline auto dimensions() const {
-        return number_vertices() == 0 ? 0 : vertices[0].dimensions();
+    inline auto dimension() const {
+        return number_vertices() == 0 ? 0 : vertices[0].dimension();
     }
     
     inline auto number_vertices() const {
@@ -271,6 +279,13 @@ public:
         return ss.str();
     }
     
+    inline auto repr() const {
+        std::stringstream ss;
+        ss << get_k() <<"-Nearest Neighbor Graph of Dimension " << dimension() << ":" << std::endl;
+        ss << as_str();
+        return ss.str();
+    }
+    
 protected:
     unsigned long k;
     unsigned long long edges_number = 0;
@@ -370,7 +385,7 @@ template <typename T>
 std::ostream& operator<<(std::ostream &out, const KNN_Graph<T> &g) {
     const auto size = g.number_vertices();
     for (auto i = size-size; i < size; ++i) {
-        out << i << ": ";
+        out << i << "-> ";
         out << g.get_neighbors(i);
     }
     return out;

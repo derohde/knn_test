@@ -30,7 +30,7 @@ public:
      * tuning parameter c1 for psi
      * 
      */
-    double c1 = 1.86;
+    double c1 = 1;
     
     /**
      * 
@@ -50,7 +50,7 @@ public:
      */
     static double c1_approximate(const KNN_Graph<V> &graph) {
         auto delta = graph.dimension();
-        return 2.85 * delta / std::pow(delta, 1.4); 
+        return std::pow(2, 0.401 * delta * (1 + 2.85 * delta / std::pow(delta, 1.4))); 
     }
     
     /**
@@ -65,9 +65,8 @@ public:
         const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
-        const auto psi = pow(2, 0.401 * delta * (1 + c1));
-        const auto s = ceil(100 * k * sqrt(n) / epsilon * c2);
-        const auto t = ceil(log(10) * psi * k * sqrt(n));
+        const auto s = std::ceil(4 * k * sqrt(n) / epsilon * c2);
+        const auto t = std::ceil(log(10) * c1 * k * sqrt(n));
         
         Uniform_Random_Generator<double> urandom_gen;
         

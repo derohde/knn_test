@@ -79,7 +79,13 @@ BOOST_PYTHON_MODULE(KNNTest)
     ;
     
     class_<Query_Oracle<double>>("Query_Oracle", init<PyObject*>());
-    
+
+    class_<Tester_Result>("Tester_Result")
+        .def_readwrite("decision", &Tester_Result::decision)
+        .def_readwrite("total_time", &Tester_Result::total_time)
+        .def_readwrite("query_time", &Tester_Result::query_time)
+    ;
+
     class_<KNN_Tester<double>>("KNN_Tester", init<optional<bool>>())
         .def_readwrite("c1", &KNN_Tester<double>::c1)
         .def_readwrite("c2", &KNN_Tester<double>::c2)

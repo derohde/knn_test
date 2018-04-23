@@ -12,6 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <iostream>
 
+#include <boost/chrono/include.hpp>
 #include <boost/python/numpy.hpp>
 
 #include "relation.hpp"
@@ -23,9 +24,10 @@ template <typename T = double>
 class Query_Oracle {
     typedef unsigned long long index_type;
     p::object function;
-    
+    unsigned long long query_time;
+
 public:
-    explicit Query_Oracle(PyObject *callable) {
+    explicit Query_Oracle(PyObject *callable) : query_time(0) {
         try {
             index_type v = 0;
             auto result = p::call<np::ndarray>(callable, v);
@@ -42,14 +44,22 @@ public:
         }
     }
     
-    auto query(const index_type i) const {
+    auto query(const index_type i) {
         p::list l;
         np::ndarray result{np::array(l, np::dtype::get_builtin<T>())};
+        auto start = boost::chrono::thread_clock::now();
         try {
             result = p::call<np::ndarray>(function.ptr(), i);
         } catch (std::exception &e) {
             std::cerr << e.what() << std::endl;
         }
+        auto stop = boost::chrono::thread_clock::now();
+        auto duration = (stop-start).count();
+        query_time += (unsigned long long) duration;
         return Relation<T>(result);
+    }
+
+    unsigned long long time() const {
+        return query_time;
     }
 };

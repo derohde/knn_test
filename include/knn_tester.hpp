@@ -13,9 +13,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <cmath>
 #include <limits>
 
+#include <boost/chrono/include.hpp>
+
 #include "knn_graph.hpp"
 #include "random.hpp"
 #include "oracle.hpp"
+
+class Tester_Result{
+public:
+    bool decision;
+    double total_time;
+    double query_time;
+};
 
 template <typename V = double>
 class KNN_Tester {
@@ -60,7 +69,7 @@ public:
      * @return true or false
      * 
      */
-    virtual bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
+    virtual Tester_Result test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
         if (auto_c1) this->c1 = c1_approximate(graph);
         const auto delta = graph.dimension();
         const auto k = graph.get_k();
@@ -120,14 +129,16 @@ public:
                 }
             }
         }
+        Tester_Result result;
         if (wrongly_connected_found) {
             std::cout << "Reject!" << std::endl;
             std::cout << distw << " < " << distn << std::endl;
-            return false;
+            result.decision = false;
         } else {
             std::cout << "Accept!" << std::endl;
-            return true;
+            result.decision = true;
         }
+        return result;
     }
     
     inline auto get_auto_c1() const {
@@ -153,14 +164,14 @@ public:
      * @return
      * 
      */
-    bool test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
+    Tester_Result test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
+        auto start = boost::chrono::process_real_cpu_clock::now();
         if (this->auto_c1) this->c1 = this->c1_approximate(graph);
         const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
-        const auto psi = pow(2, 0.401 * delta * (1 + this->c1));
-        const auto s = ceil(100 * k * sqrt(n) / epsilon * this->c2);
-        const auto t = ceil(log(10) * psi * k * sqrt(n));
+        const auto s = std::ceil(4 * k * sqrt(n) / epsilon * this->c2);
+        const auto t = std::ceil(log(10) * this->c1 * k * sqrt(n));
         
         Uniform_Random_Generator<double> urandom_gen;
         
@@ -218,14 +229,22 @@ public:
                 }
             }
         }
+        auto stop = boost::chrono::process_real_cpu_clock::now();
+        auto total_time = (stop-start).count();
+        auto query_time = Oracle.time();
+
+        Tester_Result result;
+        result.total_time = total_time / 1000000000.0;
+        result.query_time = query_time / 1000000000.0;
         if (wrongly_connected_found) {
             std::cout << "Reject!" << std::endl;
             std::cout << distw << " < " << distn << std::endl;
-            return false;
+            result.decision = false;
         } else {
             std::cout << "Accept!" << std::endl;
-            return true;
+            result.decision = true;
         }
+        return result;
     }
 };
 

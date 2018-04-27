@@ -23,6 +23,7 @@ namespace np = boost::python::numpy;
 template <typename T = double>
 class Query_Oracle {
     typedef unsigned long long index_type;
+    
     p::object function;
     unsigned long long query_time;
 
@@ -55,7 +56,10 @@ public:
         }
         auto stop = boost::chrono::thread_clock::now();
         auto duration = (stop-start).count();
-        query_time += (unsigned long long) duration;
+        #pragma omp critical
+        {
+            query_time += static_cast<unsigned long long>(duration);
+        }
         return Relation<T>(result);
     }
 

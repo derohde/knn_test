@@ -56,10 +56,7 @@ public:
         }
         auto stop = boost::chrono::thread_clock::now();
         auto duration = (stop-start).count();
-        #pragma omp critical
-        {
-            query_time += static_cast<unsigned long long>(duration);
-        }
+        query_time += static_cast<unsigned long long>(duration);
         return Relation<T>(result);
     }
 

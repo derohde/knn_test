@@ -87,7 +87,7 @@ public:
         bool wrongly_connected_found = false;
         double distn, distw;
         
-        #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
+        //#pragma omp parallel for shared(wrongly_connected_found, distn, distw)
         for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
@@ -96,7 +96,7 @@ public:
             const auto &neighbors = graph.get_edges()[v];
             V distN = 0;
             for (const auto &neighbor: neighbors) {
-                auto dist = KNN_Graph<V>::euclidean_distance_squared(v_value, graph.get_vertex(neighbor));
+                auto dist = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(neighbor));
                 if (dist > distN) {
                     distN = dist;
                 }
@@ -106,7 +106,7 @@ public:
                 if (wrongly_connected_found) {
                     continue;
                 }
-                auto dist = KNN_Graph<V>::euclidean_distance_squared(v_value, graph.get_vertex(w));
+                auto dist = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(w));
                 if (v != w and distN - dist > std::numeric_limits<V>::epsilon()) {
                     auto is_neighbor = false;
                     for (const auto &neighbor: neighbors) {
@@ -183,7 +183,7 @@ public:
         bool wrongly_connected_found = false;
         double distn, distw;
         
-        #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
+        //#pragma omp parallel for shared(wrongly_connected_found, distn, distw)
         for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
@@ -196,7 +196,7 @@ public:
             if (neighbors.size() > 4 * k * d / epsilon) continue;
             V distN = 0;
             for (const auto &neighbor: neighbors) {
-                auto dist = KNN_Graph<V>::euclidean_distance_squared(v_value, neighbor);
+                auto dist = KNN_Graph<V>::euclidean_distance(v_value, neighbor);
                 if (dist > distN) {
                     distN = dist;
                 }
@@ -206,7 +206,7 @@ public:
                 if (wrongly_connected_found) {
                     continue;
                 }
-                auto dist = KNN_Graph<V>::euclidean_distance_squared(v_value, graph.get_vertex(w));
+                auto dist = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(w));
                 if (v != w and distN - dist > std::numeric_limits<V>::epsilon()) {
                     auto is_neighbor = false;
                     for (const auto &neighbor: neighbors) {
@@ -274,7 +274,7 @@ public:
         std::cout << "|S| = " << s << std::endl;
         std::cout << "|T| = " << t << std::endl;
         
-        #pragma omp parallel for shared(result) num_threads(1)
+        //#pragma omp parallel for shared(result)
         for (unsigned long long i = 0; i < S.size(); ++i) {
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
@@ -283,7 +283,7 @@ public:
             V distN = 0;
             unsigned long long furthest = 0;
             for (const auto &neighbor: neighbors) {
-                auto dist = KNN_Graph<V>::euclidean_distance_squared(v_value, graph.get_vertex(neighbor));
+                auto dist = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(neighbor));
                 if (dist > distN) {
                     distN = dist;
                     furthest = neighbor;
@@ -291,7 +291,7 @@ public:
             }
             for (unsigned long long j = 0; j < T.size(); ++j) {
                 unsigned long long w = floor(T[j] * n);
-                auto dist = KNN_Graph<V>::euclidean_distance_squared(v_value, graph.get_vertex(w));
+                auto dist = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(w));
                 if (v != w and distN - dist > std::numeric_limits<V>::epsilon()) {
                     auto is_neighbor = false;
                     for (const auto &neighbor: neighbors) {
@@ -307,7 +307,7 @@ public:
                             ++result;
                             distN = 0;
                             for (const auto &neighbor: neighbors) {
-                                auto distF = KNN_Graph<V>::euclidean_distance_squared(v_value, graph.get_vertex(neighbor));
+                                auto distF = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(neighbor));
                                 if (distF > distN) {
                                     distN = distF;
                                     furthest = neighbor;

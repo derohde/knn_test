@@ -274,7 +274,7 @@ public:
         std::cout << "|S| = " << s << std::endl;
         std::cout << "|T| = " << t << std::endl;
         
-        #pragma omp parallel for shared(result)
+        #pragma omp parallel for shared(result) num_threads(1)
         for (unsigned long long i = 0; i < S.size(); ++i) {
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);

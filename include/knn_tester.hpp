@@ -21,8 +21,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 class Tester_Result{
 public:
     bool decision;
-    long double total_time;
-    long double query_time;
+    double total_time;
+    double query_time;
 };
 
 template <typename V = double>
@@ -87,8 +87,10 @@ public:
         bool wrongly_connected_found = false;
         double distn, distw;
         
-        //#pragma omp parallel for shared(wrongly_connected_found, distn, distw)
-        for (unsigned long long i = 0; i < S.size(); ++i) {
+	#ifndef SINGLETHREAD
+        #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
+        #endif
+	for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
@@ -116,7 +118,9 @@ public:
                         }
                     }
                     if (not is_neighbor) {
-                        #pragma omp critical
+                        #ifndef SINGLETHREAD
+			#pragma omp critical
+			#endif
                         {
                             if (not wrongly_connected_found) {
                                 wrongly_connected_found = true;
@@ -183,13 +187,17 @@ public:
         bool wrongly_connected_found = false;
         double distn, distw;
         
-        //#pragma omp parallel for shared(wrongly_connected_found, distn, distw)
-        for (unsigned long long i = 0; i < S.size(); ++i) {
+	#ifndef SINGLETHREAD
+        #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
+        #endif
+	for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
             Relation<V> neighbors;
-            #pragma omp critical
+            #ifndef SINGLETHREAD
+	    #pragma omp critical
+	    #endif
             {
                 neighbors = Oracle.query(v);
             }
@@ -216,7 +224,9 @@ public:
                         }
                     }
                     if (not is_neighbor) {
-                        #pragma omp critical
+                        #ifndef SINGLETHREAD
+			#pragma omp critical
+			#endif
                         {
                             if (not wrongly_connected_found) {
                                 wrongly_connected_found = true;
@@ -229,12 +239,12 @@ public:
             }
         }
         std::chrono::steady_clock::time_point stop = std::chrono::steady_clock::now();
-        std::chrono::nanoseconds total_time = (stop - start);
-        std::chrono::nanoseconds query_time = Oracle.time();
+        std::chrono::milliseconds total_time = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::chrono::milliseconds query_time = std::chrono::duration_cast<std::chrono::milliseconds>(Oracle.time());
 
         Tester_Result result;
-        result.total_time = total_time.count() / 1e9;
-        result.query_time = query_time.count() / 1e9;
+        result.total_time = total_time.count();
+        result.query_time = query_time.count();
         if (wrongly_connected_found) {
             std::cout << "Reject!" << std::endl;
             std::cout << distw << " < " << distn << std::endl;
@@ -274,8 +284,10 @@ public:
         std::cout << "|S| = " << s << std::endl;
         std::cout << "|T| = " << t << std::endl;
         
-        //#pragma omp parallel for shared(result)
-        for (unsigned long long i = 0; i < S.size(); ++i) {
+	#ifndef SINGLETHREAD
+        #pragma omp parallel for shared(result)
+        #endif
+	for (unsigned long long i = 0; i < S.size(); ++i) {
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
             if (graph.number_neighbors(v) > 4 * k * d / epsilon) continue;
@@ -301,7 +313,9 @@ public:
                         }
                     }
                     if (not is_neighbor) {
-                        #pragma omp critical
+                        #ifndef SINGLETHREAD
+			#pragma omp critical
+			#endif
                         {
                             graph.get_edges()[v][furthest] = w;
                             ++result;

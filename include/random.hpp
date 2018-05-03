@@ -47,8 +47,10 @@ public:
     
     Relation<T> get() {
         Relation<T> result(n);
-        #pragma omp parallel for shared(result)
-        for (unsigned long long i = 0; i < n; ++i) {
+        #ifndef SINGLETHREAD
+	#pragma omp parallel for shared(result)
+        #endif
+	for (unsigned long long i = 0; i < n; ++i) {
             Tuple<T> newtuple{d};
             for (unsigned j = 0; j < d; ++j) {
                 newtuple[j] = this->Uniform_Random_Generator<T>::get();

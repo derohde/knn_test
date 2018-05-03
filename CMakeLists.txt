@@ -4,7 +4,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive") #supress error in older gcc
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0") # no optimization
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSINGLE_THREAD") # no optimization
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSINGLETHREAD") # no optimization
 
 # Include header files from directory 'include'
 include_directories(${CMAKE_SOURCE_DIR}/include)

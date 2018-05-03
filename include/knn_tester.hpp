@@ -21,8 +21,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 class Tester_Result{
 public:
     bool decision;
-    double total_time;
-    double query_time;
+    long double total_time;
+    long double query_time;
 };
 
 template <typename V = double>
@@ -164,7 +164,7 @@ public:
      * 
      */
     Tester_Result test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
-        auto start = std::chrono::steady_clock::now();
+        std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
         if (this->auto_c1) this->c1 = this->c1_approximate(graph);
         const auto delta = graph.dimension();
         const auto k = graph.get_k();
@@ -228,13 +228,13 @@ public:
                 }
             }
         }
-        auto stop = std::chrono::steady_clock::now();
-        std::chrono::duration<double> total_time = (stop - start);
-        std::chrono::duration<double> query_time = Oracle.time();
+        std::chrono::steady_clock::time_point stop = std::chrono::steady_clock::now();
+        std::chrono::nanoseconds total_time = (stop - start);
+        std::chrono::nanoseconds query_time = Oracle.time();
 
         Tester_Result result;
-        result.total_time = total_time.count();
-        result.query_time = query_time.count();
+        result.total_time = total_time.count() / 1e9;
+        result.query_time = query_time.count() / 1e9;
         if (wrongly_connected_found) {
             std::cout << "Reject!" << std::endl;
             std::cout << distw << " < " << distn << std::endl;

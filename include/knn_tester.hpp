@@ -87,10 +87,10 @@ public:
         bool wrongly_connected_found = false;
         double distn, distw;
         
-	#ifndef SINGLETHREAD
+        #ifndef SINGLETHREAD
         #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
         #endif
-	for (unsigned long long i = 0; i < S.size(); ++i) {
+        for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
@@ -104,10 +104,10 @@ public:
                 }
             }
             for (unsigned long long j = 0; j < T.size(); ++j) {
-                unsigned long long w = floor(T[j] * n);
                 if (wrongly_connected_found) {
                     continue;
                 }
+                unsigned long long w = floor(T[j] * n);
                 auto dist = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(w));
                 if (v != w and distN - dist > std::numeric_limits<V>::epsilon()) {
                     auto is_neighbor = false;
@@ -119,8 +119,8 @@ public:
                     }
                     if (not is_neighbor) {
                         #ifndef SINGLETHREAD
-			#pragma omp critical
-			#endif
+                        #pragma omp critical
+                        #endif
                         {
                             if (not wrongly_connected_found) {
                                 wrongly_connected_found = true;
@@ -168,6 +168,7 @@ public:
      * 
      */
     Tester_Result test(const KNN_Graph<V> &graph, const double d, const double epsilon = 0.001) {
+        Oracle.reset_timer();
         std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
         if (this->auto_c1) this->c1 = this->c1_approximate(graph);
         const auto delta = graph.dimension();
@@ -187,17 +188,17 @@ public:
         bool wrongly_connected_found = false;
         double distn, distw;
         
-	#ifndef SINGLETHREAD
+        #ifndef SINGLETHREAD
         #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
         #endif
-	for (unsigned long long i = 0; i < S.size(); ++i) {
+        for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
             Relation<V> neighbors;
             #ifndef SINGLETHREAD
-	    #pragma omp critical
-	    #endif
+            #pragma omp critical
+            #endif
             {
                 neighbors = Oracle.query(v);
             }
@@ -210,10 +211,10 @@ public:
                 }
             }
             for (unsigned long long j = 0; j < T.size(); ++j) {
-                unsigned long long w = floor(T[j] * n);
                 if (wrongly_connected_found) {
                     continue;
                 }
+                unsigned long long w = floor(T[j] * n);
                 auto dist = KNN_Graph<V>::euclidean_distance(v_value, graph.get_vertex(w));
                 if (v != w and distN - dist > std::numeric_limits<V>::epsilon()) {
                     auto is_neighbor = false;
@@ -225,8 +226,8 @@ public:
                     }
                     if (not is_neighbor) {
                         #ifndef SINGLETHREAD
-			#pragma omp critical
-			#endif
+                        #pragma omp critical
+                        #endif
                         {
                             if (not wrongly_connected_found) {
                                 wrongly_connected_found = true;
@@ -284,10 +285,10 @@ public:
         std::cout << "|S| = " << s << std::endl;
         std::cout << "|T| = " << t << std::endl;
         
-	#ifndef SINGLETHREAD
+        #ifndef SINGLETHREAD
         #pragma omp parallel for shared(result)
         #endif
-	for (unsigned long long i = 0; i < S.size(); ++i) {
+        for (unsigned long long i = 0; i < S.size(); ++i) {
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
             if (graph.number_neighbors(v) > 4 * k * d / epsilon) continue;
@@ -314,8 +315,8 @@ public:
                     }
                     if (not is_neighbor) {
                         #ifndef SINGLETHREAD
-			#pragma omp critical
-			#endif
+                        #pragma omp critical
+                        #endif
                         {
                             graph.get_edges()[v][furthest] = w;
                             ++result;

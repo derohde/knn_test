@@ -69,8 +69,8 @@ public:
         std::vector<index_type> index(number_vertices());
         
         #ifndef SINGLETHREAD
-	#pragma omp parallel for shared(index)
-	#endif
+        #pragma omp parallel for shared(index)
+        #endif
         for (index_type i = 0; i < number_vertices(); ++i) {
             index[i] = i;
         }
@@ -84,10 +84,10 @@ public:
         vertices_type new_vertices(number_vertices());
         edges_type new_edges(number_vertices());
         
-	#ifndef SINGLETHREAD
+        #ifndef SINGLETHREAD
         #pragma omp parallel for shared(new_vertices, new_edges, index)
         #endif
-	for (index_type i = 0; i < number_vertices(); ++i) {
+        for (index_type i = 0; i < number_vertices(); ++i) {
             new_vertices[i] = vertices[index[i]];
             new_edges[i] = edges[index[i]];
             std::sort(new_edges[i].begin(), new_edges[i].end(), less);
@@ -166,9 +166,9 @@ public:
     inline auto number_wrongly_connected_vertices() const {
         unsigned long long result = 0;
         
-	#ifndef SINGLETHREAD
+        #ifndef SINGLETHREAD
         #pragma omp parallel for shared(result)
-	#endif
+        #endif
         for (index_type i = 0; i < number_vertices(); ++i) {
             T distN = 0;
             auto wrongly_connected = false;
@@ -187,8 +187,8 @@ public:
                     auto dist = euclidean_distance_squared(vertices[i], vertices[j]);
                     if (std::fabs(dist - distN) > std::numeric_limits<T>::epsilon() and dist < distN) {
                         #ifndef SINGLETHREAD
-			#pragma omp critical
-			#endif
+                        #pragma omp critical
+                        #endif
                         {
                             if (not wrongly_connected) {
                                 ++result;

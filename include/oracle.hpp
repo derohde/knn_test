@@ -55,9 +55,13 @@ public:
             std::cerr << e.what() << std::endl;
         }
         std::chrono::steady_clock::time_point stop = std::chrono::steady_clock::now();
-	std::chrono::nanoseconds duration = stop - start;
+        std::chrono::nanoseconds duration = stop - start;
         query_time += duration;
         return Relation<T>(result);
+    }
+    
+    void reset_timer() {
+        query_time = std::chrono::nanoseconds(0);
     }
 
     auto time() const {

@@ -61,7 +61,7 @@ public:
     }
     
     void reset_timer() {
-        query_time = std::chrono::nanoseconds(0);
+        query_time = 0;
     }
 
     unsigned long long time() const {

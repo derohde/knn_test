@@ -87,10 +87,8 @@ public:
         
         bool wrongly_connected_found = false;
         double distn, distw;
-        
-        #ifndef SINGLETHREAD
+
         #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
-        #endif
         for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
@@ -119,9 +117,7 @@ public:
                         }
                     }
                     if (not is_neighbor) {
-                        #ifndef SINGLETHREAD
                         #pragma omp critical
-                        #endif
                         {
                             if (not wrongly_connected_found) {
                                 wrongly_connected_found = true;
@@ -189,17 +185,13 @@ public:
         bool wrongly_connected_found = false;
         double distn, distw;
         
-        #ifndef SINGLETHREAD
         #pragma omp parallel for shared(wrongly_connected_found, distn, distw)
-        #endif
         for (unsigned long long i = 0; i < S.size(); ++i) {
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
             Relation<V> neighbors;
-            #ifndef SINGLETHREAD
             #pragma omp critical
-            #endif
             {
                 neighbors = Oracle.query(v);
             }
@@ -226,9 +218,7 @@ public:
                         }
                     }
                     if (not is_neighbor) {
-                        #ifndef SINGLETHREAD
                         #pragma omp critical
-                        #endif
                         {
                             if (not wrongly_connected_found) {
                                 wrongly_connected_found = true;
@@ -285,10 +275,8 @@ public:
         
         std::cout << "|S| = " << s << std::endl;
         std::cout << "|T| = " << t << std::endl;
-        
-        #ifndef SINGLETHREAD
+
         #pragma omp parallel for shared(result)
-        #endif
         for (unsigned long long i = 0; i < S.size(); ++i) {
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
@@ -315,9 +303,7 @@ public:
                         }
                     }
                     if (not is_neighbor) {
-                        #ifndef SINGLETHREAD
                         #pragma omp critical
-                        #endif
                         {
                             graph.get_edges()[v][furthest] = w;
                             ++result;

@@ -11,7 +11,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
-find_package(Boost 1.63 COMPONENTS system python numpy REQUIRED)
+find_package(Boost 1.63 COMPONENTS system chrono python numpy REQUIRED)
 find_package(OpenMP REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 link_libraries(${PYTHON_LIBRARIES} ${Boost_LIBRARIES} ${DLIB_LIBRARIES})

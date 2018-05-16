@@ -74,7 +74,7 @@ public:
         const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
-        const auto s = std::ceil(4 * k * sqrt(n) / epsilon * c2);
+        const auto s = std::ceil(100 * k * sqrt(n) / epsilon * c2);
         const auto t = std::ceil(log(10) * c1 * k * sqrt(n));
         
         Uniform_Random_Generator<double> urandom_gen;
@@ -93,7 +93,7 @@ public:
             if (wrongly_connected_found) continue;
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
-            if (graph.number_neighbors(v) > 4 * k * d / epsilon) continue;
+            if (graph.number_neighbors(v) > 100 * k * d / epsilon) continue;
             const auto &neighbors = graph.get_edges()[v];
             V distN = 0;
             for (const auto &neighbor: neighbors) {
@@ -171,7 +171,7 @@ public:
         const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
-        const auto s = std::ceil(4 * k * sqrt(n) / epsilon * this->c2);
+        const auto s = std::ceil(100 * k * sqrt(n) / epsilon * this->c2);
         const auto t = std::ceil(log(10) * this->c1 * k * sqrt(n));
         
         Uniform_Random_Generator<double> urandom_gen;
@@ -195,7 +195,7 @@ public:
             {
                 neighbors = Oracle.query(v);
             }
-            if (neighbors.size() > 4 * k * d / epsilon) continue;
+            if (neighbors.size() > 100 * k * d / epsilon) continue;
             V distN = 0;
             for (const auto &neighbor: neighbors) {
                 auto dist = KNN_Graph<V>::euclidean_distance(v_value, neighbor);
@@ -265,7 +265,7 @@ public:
         const auto delta = graph.dimension();
         const auto k = graph.get_k();
         const auto n = graph.number_vertices();
-        const auto s = ceil(4 * k * sqrt(n) / epsilon * this->c2);
+        const auto s = ceil(100 * k * sqrt(n) / epsilon * this->c2);
         const auto t = ceil(log(10) * this->c1 * k * sqrt(n));
         
         Uniform_Random_Generator<double> urandom_gen;
@@ -280,7 +280,7 @@ public:
         for (unsigned long long i = 0; i < S.size(); ++i) {
             const unsigned long long v = floor(S[i] * n);
             const auto v_value = graph.get_vertex(v);
-            if (graph.number_neighbors(v) > 4 * k * d / epsilon) continue;
+            if (graph.number_neighbors(v) > 100 * k * d / epsilon) continue;
             auto &neighbors = graph.get_edges()[v];
             V distN = 0;
             unsigned long long furthest = 0;

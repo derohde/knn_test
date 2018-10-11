@@ -66,6 +66,7 @@ BOOST_PYTHON_MODULE(KNNTest)
         .def("set_edges", &KNN_Graph<double>::edges_from_ndarray)
         .def("sort", &KNN_Graph<double>::sort)
         .def("epsilon", &KNN_Graph<double>::epsilon)
+        .def("add_edge", &KNN_Graph<double>::add_edge)
         .add_property("vertices", range(&KNN_Graph<double>::vertices_begin, &KNN_Graph<double>::vertices_end))
     ;
     

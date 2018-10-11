@@ -210,6 +210,10 @@ public:
         return k;
     }
     
+    void add_edge(const index_type i, const index_type j) {
+		this->edges[i].push_back(j);
+	}
+    
     virtual void build(const vertices_type &vertices) {
         this->vertices = vertices;
         this->edges = edges_type(vertices.size());

@@ -212,6 +212,7 @@ public:
     
     void add_edge(const index_type i, const index_type j) {
 		this->edges[i].push_back(j);
+		this->edges_number++;
 	}
     
     virtual void build(const vertices_type &vertices) {
@@ -221,6 +222,7 @@ public:
     
     virtual void build(const np::ndarray &in) {
         this->vertices = vertices_type{in};
+        this->edges = edges_type(vertices.size());
     }
     
     void edges_from_ndarray(const np::ndarray &in) {

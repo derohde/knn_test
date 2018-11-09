@@ -47,7 +47,7 @@ BOOST_PYTHON_MODULE(KNNTest)
     
     class_<KNN_Graph<double>::Adjacency_List>("Adjacency_List", init<>())
         .def("__getitem__", &KNN_Graph<double>::Adjacency_List::get)
-        .def("__iter__", iterator<std::vector<typename KNN_Graph<double>::index_type>>())
+        .def("__iter__", range(&KNN_Graph<double>::Adjacency_List::pbegin, &KNN_Graph<double>::Adjacency_List::pend))
         .add_property("length", &KNN_Graph<double>::Adjacency_List::length)
     ;
     

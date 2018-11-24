@@ -1,6 +1,5 @@
 /*! \mainpage KNNTest
 \image html knntest.png
-\section download Download
 \htmlinclude download.html
 */
 
